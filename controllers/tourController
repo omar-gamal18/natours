@@ -1,7 +1,17 @@
 const Tour = require('../models/tourModel');
 
+exports.getTop5 = (req, res, next) => {
+  Object.assign(req.query, {
+    limit: '5',
+    sort: '-ratingAverage,price',
+    fields: 'name,price,ratingAverage,summary',
+  });
+  next();
+};
+
 exports.getAllTours = async (req, res) => {
   try {
+    console.log(req.query);
     // filter
     const queryObj = { ...req.query };
     const excludeFields = ['sort', 'page', 'limit', 'fields'];
@@ -28,7 +38,7 @@ exports.getAllTours = async (req, res) => {
     }
 
     const page = +req.query.page || 1;
-    const limit = +req.query.limit || 3;
+    const limit = +req.query.limit || 100;
     const skip = (page - 1) * limit;
 
     query = query.skip(skip).limit(limit);
