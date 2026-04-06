@@ -1,6 +1,39 @@
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
 
+exports.getToursStatus = async (req, res) => {
+  try {
+    const stat = await Tour.aggregate([
+      {
+        $match: { price: { $gte: 1000 } },
+      },
+      {
+        $group: {
+          _id: '$difficulty',
+          numTours: { $sum: 1 },
+          numRating: { $sum: '$ratingsQuantity' },
+          avgRating: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: 'price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+      {
+        $sort: { avgPrice: -1 },
+      },
+    ]);
+    res.status(200).json({
+      status: 'success',
+      data: stat,
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err.message,
+    });
+  }
+};
+
 exports.getTop5 = (req, res, next) => {
   Object.assign(req.query, {
     limit: '5',
