@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const tourSchema = mongoose.Schema(
   {
@@ -8,17 +9,18 @@ const tourSchema = mongoose.Schema(
       unique: true,
       trim: true,
     },
+    slug: String,
     duration: {
       type: Number,
-      required: [true, 'the durations is required'],
+      // required: [true, 'the durations is required'],
     },
     maxGroupSize: {
       type: Number,
-      required: [true, 'the group size is required'],
+      // required: [true, 'the group size is required'],
     },
     difficulty: {
       type: String,
-      required: [true, 'the difficulty is required'],
+      // required: [true, 'the difficulty is required'],
     },
     ratingsAverage: {
       type: Number,
@@ -30,13 +32,13 @@ const tourSchema = mongoose.Schema(
     },
     price: {
       type: Number,
-      required: [true, 'the price is required'],
+      // required: [true, 'the price is required'],
     },
     priceDiscount: Number,
     summary: {
       type: String,
       trim: true,
-      required: [true, 'the description is required'],
+      // required: [true, 'the description is required'],
     },
     description: {
       type: String,
@@ -44,7 +46,7 @@ const tourSchema = mongoose.Schema(
     },
     imageCover: {
       type: String,
-      required: [true, 'the image is required'],
+      // required: [true, 'the image is required'],
     },
     images: [String],
     createdAt: {
@@ -61,6 +63,10 @@ const tourSchema = mongoose.Schema(
 
 tourSchema.virtual('weeks').get(function () {
   return this.duration / 7;
+});
+
+tourSchema.pre('save', function () {
+  this.slug = slugify(this.name, { lower: true });
 });
 
 const Tour = mongoose.model('Tour', tourSchema);
