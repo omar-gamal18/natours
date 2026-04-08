@@ -12,15 +12,15 @@ const tourSchema = mongoose.Schema(
     slug: String,
     duration: {
       type: Number,
-      // required: [true, 'the durations is required'],
+      required: [true, 'the durations is required'],
     },
     maxGroupSize: {
       type: Number,
-      // required: [true, 'the group size is required'],
+      required: [true, 'the group size is required'],
     },
     difficulty: {
       type: String,
-      // required: [true, 'the difficulty is required'],
+      required: [true, 'the difficulty is required'],
     },
     ratingsAverage: {
       type: Number,
@@ -32,13 +32,13 @@ const tourSchema = mongoose.Schema(
     },
     price: {
       type: Number,
-      // required: [true, 'the price is required'],
+      required: [true, 'the price is required'],
     },
     priceDiscount: Number,
     summary: {
       type: String,
       trim: true,
-      // required: [true, 'the description is required'],
+      required: [true, 'the description is required'],
     },
     description: {
       type: String,
@@ -46,7 +46,7 @@ const tourSchema = mongoose.Schema(
     },
     imageCover: {
       type: String,
-      // required: [true, 'the image is required'],
+      required: [true, 'the image is required'],
     },
     images: [String],
     createdAt: {
@@ -81,6 +81,11 @@ tourSchema.pre(/^find/, function () {
 tourSchema.post(/^find/, function (docs) {
   console.log(`TIME TOOK ${Date.now() - this.start} millisecondes`);
   console.log(docs);
+});
+
+tourSchema.pre('aggregate', function () {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  console.log(this.pipeline());
 });
 
 const Tour = mongoose.model('Tour', tourSchema);
