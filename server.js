@@ -29,6 +29,7 @@ app.use('/api/v1/tours', tourRoutes);
 
 //   next(error); // this step will automatically skip all other midllewares and go to Error Handling Middleware
 // });
+
 // NEW V
 
 app.all('*path', (req, res, next) => {
