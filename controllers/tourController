@@ -37,7 +37,7 @@ exports.getTour = async (req, res, next) => {
     return next(new AppError('failed to found tour with this id', 404));
   }
 
-  res.status(200).send({
+  res.status(200).json({
     status: 'success',
     data: {
       tour,
