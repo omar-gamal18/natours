@@ -1,5 +1,6 @@
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
+const AppError = require('../utils/appError');
 
 exports.getTop5 = (req, res, next) => {
   Object.assign(req.query, {
@@ -28,8 +29,14 @@ exports.getAllTours = async (req, res, next) => {
     },
   });
 };
+
 exports.getTour = async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
+
+  if (!tour) {
+    return new AppError('failed to found tour with this id', 404);
+  }
+
   res.status(200).send({
     status: 'success',
     data: {
