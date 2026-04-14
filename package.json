@@ -4,11 +4,11 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js",
-    "debug": "ndb server.js"
-
+    "debug": "ndb server.js",
+    "start:prod": "cross-env NODE_ENV=production nodemon server.js"
   },
+  
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -18,5 +18,8 @@
     "mongoose": "^9.3.2",
     "nodemon": "^3.1.14",
     "slugify": "^1.6.9"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0"
   }
 }
