@@ -10,6 +10,12 @@ dotenv.config({ path: './config.env' });
 const app = express();
 app.use(express.json());
 
+process.on('uncaughtException', (err) => {
+  console.error('UNHANDLED Exception 💥', err);
+  console.log(err.name, err.message);
+  process.exit(1);
+});
+
 const DB = process.env.DATABASE.replace(
   '<db_password>',
   process.env.DATABASE_PASSWORD,
@@ -25,15 +31,17 @@ app.use(ErrorHandling);
 
 const port = process.env.PORT;
 
-mongoose
-  .connect(DB)
-  .then(() => {
-    console.log('DB connected successfully');
+mongoose.connect(DB).then(() => {
+  console.log('DB connected successfully');
+});
 
-    app.listen(port, () => {
-      console.log(`Server listening on port ${port}`);
-    });
-  })
-  .catch((err) => {
-    console.log('DB connection failed:', err);
+const server = app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.log(err.name, err.message);
+  server.close((_) => {
+    process.exit(1);
   });
+});
