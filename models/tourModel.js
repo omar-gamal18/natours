@@ -51,32 +51,32 @@ const tourSchema = mongoose.Schema(
         },
         message: 'Discount price ({VALUE}) should be below regular price',
       },
-
-      summary: {
-        type: String,
-        trim: true,
-        required: [true, 'the description is required'],
-      },
-      description: {
-        type: String,
-        trim: true,
-      },
-      imageCover: {
-        type: String,
-        required: [true, 'the image is required'],
-      },
-      images: [String],
-      createdAt: {
-        type: Date,
-        default: Date.now(),
-      },
-      startDates: [Date],
-      secretTour: {
-        type: Boolean,
-        default: false,
-      },
+    },
+    summary: {
+      type: String,
+      trim: true,
+      required: [true, 'the description is required'],
+    },
+    description: {
+      type: String,
+      trim: true,
+    },
+    imageCover: {
+      type: String,
+      required: [true, 'the image is required'],
+    },
+    images: [String],
+    createdAt: {
+      type: Date,
+      default: Date.now(),
+    },
+    startDates: [Date],
+    secretTour: {
+      type: Boolean,
+      default: false,
     },
   },
+
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
