@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const AppError = require('./utils/appError');
 const ErrorHandling = require('./controllers/errorController');
 const tourRoutes = require('./routes/tourRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 dotenv.config({ path: './config.env' });
 const app = express();
@@ -21,6 +22,7 @@ const DB = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD,
 );
 app.use('/api/v1/tours', tourRoutes);
+app.use('/api/v1/users', userRoutes);
 
 app.all('*path', (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this server`, 404)); // this step will automatically skip all other midllewares and go to Error Handling Middleware
