@@ -12,7 +12,6 @@ exports.getTop5 = (req, res, next) => {
 };
 
 exports.getAllTours = async (req, res, next) => {
-  console.log(req.query);
   const features = new APIFeatures(Tour.find(), req.query)
     .filter()
     .sort()
