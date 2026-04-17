@@ -49,3 +49,34 @@ exports.login = async (req, res, next) => {
     },
   });
 };
+
+exports.protect = async (req, res, next) => {
+  let token;
+  if (
+    req.headrs.authorization &&
+    req.headrs.authorization.startsWith('Bearer')
+  ) {
+    token = req.headrs.authorization.split(' ')[1];
+  }
+
+  if (!token) {
+    return next(
+      new AppError('You are not logged in!,login first to get access', 401),
+    );
+  }
+
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+  // 4) check if user still exists
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
+    return res.status(401).json({
+      message: 'User no longer exists',
+    });
+  }
+
+  // 5) attach user to request
+  req.user = currentUser;
+
+  next();
+};
