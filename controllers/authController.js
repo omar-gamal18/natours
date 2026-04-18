@@ -1,7 +1,9 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
+const { decode } = require('punycode');
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -15,6 +17,7 @@ exports.signUp = async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    passwordChangedAt: req.body.passwordChangedAt,
   });
 
   const token = signToken(newUser._id);
@@ -51,32 +54,31 @@ exports.login = async (req, res, next) => {
 };
 
 exports.protect = async (req, res, next) => {
+  // 1. Get token
   let token;
   if (
-    req.headrs.authorization &&
-    req.headrs.authorization.startsWith('Bearer')
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
   ) {
-    token = req.headrs.authorization.split(' ')[1];
+    token = req.headers.authorization.split(' ')[1];
   }
 
+  // 2. Check token exists
   if (!token) {
     return next(
       new AppError('You are not logged in!,login first to get access', 401),
     );
   }
+  // 3. Verify token
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  // 4. Check user still exists
+  const cuurentUser = await User.findById(decoded.id);
+  if (!cuurentUser) return next(new AppError('User no longer exists', 401));
 
-  // 4) check if user still exists
-  const currentUser = await User.findById(decoded.id);
-  if (!currentUser) {
-    return res.status(401).json({
-      message: 'User no longer exists',
-    });
+  // 5. Check if password changed after token was issued
+  if (cuurentUser.changedPasswordAfter(decoded.iat)) {
+    return next(new AppError('Password changed! Please log in again.', 401));
   }
-
-  // 5) attach user to request
-  req.user = currentUser;
-
   next();
 };
