@@ -14,6 +14,18 @@ const signToken = (id) => {
   });
 };
 
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
 exports.signUp = async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -23,15 +35,7 @@ exports.signUp = async (req, res, next) => {
     passwordChangedAt: req.body.passwordChangedAt,
     role: req.body.role,
   });
-
-  const token = signToken(newUser._id);
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  createSendToken(newUser, 201, res);
 };
 
 exports.login = async (req, res, next) => {
@@ -47,14 +51,7 @@ exports.login = async (req, res, next) => {
     return next(new AppError('Invalid credentials', 401));
   }
 
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      token,
-    },
-  });
+  createSendToken(user, 200, res);
 };
 
 exports.protect = async (req, res, next) => {
@@ -77,16 +74,16 @@ exports.protect = async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   // 4. Check user still exists
-  const cuurentUser = await User.findById(decoded.id);
-  if (!cuurentUser) return next(new AppError('User no longer exists', 401));
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) return next(new AppError('User no longer exists', 401));
 
   // 5. Check if password changed after token was issued
-  if (cuurentUser.changedPasswordAfter(decoded.iat)) {
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
     return next(new AppError('Password changed! Please log in again.', 401));
   }
 
   // 6. GRANT ACCESS TO PROTECTED ROUTES
-  req.user = cuurentUser;
+  req.user = currentUser;
   next();
 };
 
@@ -158,9 +155,24 @@ exports.resetPassword = async (req, res, next) => {
   await user.save();
   // 3) Update changedPasswordAt property for the user
   // 4) Log the user in, send JWT
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createSendToken(user, 200, res);
+};
+
+exports.updatePassword = async (req, res, next) => {
+  // 1) Get user from collection
+  const user = await User.findById(req.user.id).select('+password');
+  console.log(user, 'second clg');
+
+  // 2) Check if POSTed current password is correct
+  if (!(await user.correctPassword(req.body.currentPassword, user.password))) {
+    return next(new AppError('your current password is wrong', 401));
+  }
+
+  // 3) If so, update password
+  user.password = req.body.password;
+  user.confirmPassword = req.body.confirmPassword;
+  await user.save();
+
+  // 4) Log user in, send JWT
+  createSendToken(user, 200, res);
 };
