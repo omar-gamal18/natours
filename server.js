@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const rateLimit = require('express-rate-limit');
 
 const AppError = require('./utils/appError');
 const ErrorHandling = require('./controllers/errorController');
@@ -9,6 +10,14 @@ const userRoutes = require('./routes/userRoutes');
 
 dotenv.config({ path: './config.env' });
 const app = express();
+
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many request from this IP, try again in one hour',
+});
+
+app.use('/api', limiter);
 app.use(express.json());
 
 process.on('uncaughtException', (err) => {

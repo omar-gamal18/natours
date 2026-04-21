@@ -17,13 +17,25 @@ const signToken = (id) => {
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
 
-  user.password = undefined;
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+  res.cookie('jwt', token, cookieOptions);
+
+  // to hide the password in response => more secure
+  const userSafe = user.toObject();
+  delete userSafe.password;
 
   res.status(statusCode).json({
     status: 'success',
-    token,
     data: {
-      user,
+      user: userSafe,
     },
   });
 };
