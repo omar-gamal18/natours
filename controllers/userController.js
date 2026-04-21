@@ -1,6 +1,36 @@
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
+
+exports.updateMe = async (req, res, next) => {
+  //1) check if user trying to update password
+  if (req.body.password || req.body.confirmPassword) {
+    return next(
+      new AppError('Invalid route pls use updatePassword route', 400),
+    );
+  }
+  const filtered = filterObj(req.body, 'name', 'email');
+  const user = await User.findByIdAndUpdate(req.user.id, filtered, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user,
+    },
+  });
+};
+
 exports.getAllUsers = async (req, res, next) => {
   const users = await User.find();
 
