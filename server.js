@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const AppError = require('./utils/appError');
 const ErrorHandling = require('./controllers/errorController');
@@ -11,14 +12,20 @@ const userRoutes = require('./routes/userRoutes');
 dotenv.config({ path: './config.env' });
 const app = express();
 
+// 1) GLOBAL MIDDLEWARES
+// Set security HTTP headers
+app.use(helmet());
+
+// Limit requests from same API
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
   message: 'Too many request from this IP, try again in one hour',
 });
-
 app.use('/api', limiter);
-app.use(express.json());
+
+// body parser
+app.use(express.json({ limit: '10kb' }));
 
 process.on('uncaughtException', (err) => {
   console.error('UNHANDLED Exception 💥', err);

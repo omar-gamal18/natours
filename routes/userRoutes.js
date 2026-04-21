@@ -1,12 +1,26 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
 
 const router = express.Router();
 
-router.post('/signup', authController.signUp);
-router.post('/login', authController.login);
+const authLimiter = rateLimit({
+  max: 5,
+  windowMs: 30 * 60 * 1000,
+  message: 'TOO many attempts, pls try again after 30 minutes',
+});
+
+router.post('/signup', authLimiter, authController.signUp);
+router.post('/login', authLimiter, authController.login);
+router.post('/forgotPassword', authLimiter, authController.forgotPassword);
+router.patch(
+  '/resetPassword/:token',
+  authLimiter,
+  authController.resetPassword,
+);
 
 router.patch(
   '/updatePassword',
@@ -16,9 +30,6 @@ router.patch(
 
 router.patch('/updateMe', authController.protect, userController.updateMe);
 router.delete('/deleteMe', authController.protect, userController.deleteMe);
-
-router.post('/forgotPassword', authController.forgotPassword);
-router.patch('/resetPassword/:token', authController.resetPassword);
 
 router
   .route('/')
