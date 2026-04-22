@@ -12,7 +12,7 @@ const userSchema = mongoose.Schema(
     },
     email: {
       type: String,
-      required: [true, 'the name is required'],
+      required: [true, 'the email  is required'],
       unique: [true, 'pls enater another email'],
       lowercase: true,
       validate: [validator.isEmail, 'pls enter valid email'],
@@ -27,10 +27,12 @@ const userSchema = mongoose.Schema(
       type: String,
       minlength: 8,
       select: false,
+      required: [true, 'password is required'],
     },
     confirmPassword: {
       type: String,
       minlength: 8,
+      required: [true, 'please confirm your password'],
       validate: {
         validator: function (val) {
           return this.password === val;
@@ -39,8 +41,14 @@ const userSchema = mongoose.Schema(
       },
     },
     passwordChangedAt: Date,
-    passwordResetToken: String,
-    passwordResetExpires: Date,
+    passwordResetToken: {
+      type: String,
+      select: false,
+    },
+    passwordResetExpires: {
+      type: Date,
+      select: false,
+    },
     active: {
       type: Boolean,
       default: true,

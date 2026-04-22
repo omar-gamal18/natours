@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 
+const User = require('./userModel');
+
 const tourSchema = mongoose.Schema(
   {
     name: {
@@ -100,6 +102,14 @@ const tourSchema = mongoose.Schema(
         description: String,
       },
     ],
+    // guides: Array, old V
+    // Child Referencing
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId, // this means we will get only the id
+        ref: 'User', // referes to the model
+      },
+    ],
   },
 
   {
@@ -117,14 +127,25 @@ tourSchema.pre('save', function () {
   this.slug = slugify(this.name, { lower: true });
 });
 
+// tourSchema.pre('save', async function () {
+//   this.guides = await Promise.all(this.guides.map((id) => User.findById(id)));
+// });
+
 tourSchema.pre(/^find/, function () {
   this.find({ secretTour: { $ne: true } });
   this.start = Date.now();
 });
 
+tourSchema.pre(/^find/, function () {
+  this.populate({
+    path: 'guides',
+    select: 'name email role',
+  });
+});
+
 tourSchema.post(/^find/, function (docs) {
   console.log(`TIME TOOK ${Date.now() - this.start} millisecondes`);
-  console.log(docs);
+  // console.log(docs);
 });
 
 tourSchema.pre('aggregate', function () {

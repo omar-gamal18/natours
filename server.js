@@ -3,8 +3,8 @@ const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-const mongoSanitize = require('express-mongo-sanitize');
-const xss = require('xss-clean');
+const sanitize = require('mongo-sanitize');
+const xss = require('xss');
 const hpp = require('hpp');
 
 const AppError = require('./utils/appError');
@@ -31,11 +31,19 @@ app.use('/api', limiter);
 app.use(express.json({ limit: '10kb' }));
 
 // Data sanitization against NoSQL query injection
-app.use(mongoSanitize());
+app.use((req, res, next) => {
+  if (req.body) req.body = sanitize(req.body);
+  if (req.params) req.params = sanitize(req.params);
+  next();
+});
 
 // Data sanitization against XSS
-app.use(xss());
-
+app.use((req, res, next) => {
+  if (req.body) {
+    req.body = JSON.parse(xss(JSON.stringify(req.body)));
+  }
+  next();
+});
 // HTTP Parameter Pollution Prevention
 app.use(
   hpp({
