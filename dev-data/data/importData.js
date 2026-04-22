@@ -19,7 +19,7 @@ mongoose
     console.log('DB connection failed:', err);
   });
 
-const tours = JSON.parse(fs.readFileSync('./tours-simple.json', 'utf8'));
+const tours = JSON.parse(fs.readFileSync('./tours.json', 'utf8'));
 
 const insertData = async () => {
   try {

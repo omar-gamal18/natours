@@ -24,7 +24,7 @@ const tourSchema = mongoose.Schema(
       type: String,
       required: [true, 'the difficulty is required'],
       enum: {
-        values: ['easy', 'medium', 'difficulty'],
+        values: ['easy', 'medium', 'difficult'],
       },
     },
     ratingsAverage: {
@@ -75,6 +75,31 @@ const tourSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    startLocation: {
+      // GeoJson
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    // Embedded / Denormalized
+    // to do it use array
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+      },
+    ],
   },
 
   {
