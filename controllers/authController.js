@@ -34,6 +34,7 @@ const createSendToken = (user, statusCode, res) => {
 
   res.status(statusCode).json({
     status: 'success',
+    token,
     data: {
       user: userSafe,
     },
@@ -45,7 +46,7 @@ exports.signUp = async (req, res, next) => {
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
+    confirmPassword: req.body.confirmPassword,
     passwordChangedAt: req.body.passwordChangedAt,
     role: req.body.role,
   });
