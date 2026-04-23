@@ -110,8 +110,14 @@ const tourSchema = mongoose.Schema(
         ref: 'User', // referes to the model
       },
     ],
+    // instead of doing that we will use virtual populate
+    // reviews: [
+    //   {
+    //     type: mongoose.Schema.ObjectId,
+    //     ref: 'Review',
+    //   },
+    // ],
   },
-
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
@@ -120,6 +126,13 @@ const tourSchema = mongoose.Schema(
 
 tourSchema.virtual('weeks').get(function () {
   return this.duration / 7;
+});
+
+// virtual populate to access reviews
+tourSchema.virtual('reviews', {
+  ref: 'Review', // which model to reference
+  foreignField: 'tour', // in Review, the field pointing to Tour
+  localField: '_id', // in Tour, match against this
 });
 
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
