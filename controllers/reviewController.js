@@ -21,22 +21,6 @@ exports.getAllReviews = async (req, res, next) => {
   });
 };
 
-exports.createReview = async (req, res, next) => {
-  // move it to it's own function
-  //   if (!req.body.tour) req.body.tour = req.params.tourId;
-  //   if (!req.body.user) req.body.user = req.user.id;
-  const review = await Review.create({
-    review: req.body.review,
-    rating: req.body.rating,
-    user: req.body.user,
-    tour: req.body.tour,
-  });
-  res.status(201).json({
-    status: 'success',
-    data: {
-      review,
-    },
-  });
-};
-
+exports.createReview = factory.createOne(Review);
 exports.deleteReview = factory.deleteOne(Review);
+exports.updateReview = factory.updateOne(Review);
