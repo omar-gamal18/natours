@@ -1,5 +1,6 @@
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
+const factory = require('./handlerFactory');
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -41,8 +42,8 @@ exports.deleteMe = async (req, res, next) => {
 };
 
 exports.getAllUsers = async (req, res, next) => {
+  console.log('hitting getAllUsers');
   const users = await User.find();
-
   res.status(200).json({
     status: 'success',
     results: users.length,
@@ -93,18 +94,7 @@ exports.updateUser = async (req, res, next) => {
     },
   });
 };
-exports.deleteUser = async (req, res, next) => {
-  const user = await User.findByIdAndDelete(req.params.id);
-
-  if (!user) {
-    return next(new AppError('failed to found user with this id', 404));
-  }
-
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
-};
+exports.deleteUser = factory.deleteOne(User);
 
 exports.getAllUsers = async (req, res, next) => {
   const users = await User.find();

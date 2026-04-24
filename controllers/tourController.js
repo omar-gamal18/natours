@@ -1,6 +1,7 @@
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
 const AppError = require('../utils/appError');
+const factory = require('./handlerFactory');
 
 exports.getTop5 = (req, res, next) => {
   Object.assign(req.query, {
@@ -70,18 +71,22 @@ exports.updateTour = async (req, res, next) => {
     },
   });
 };
-exports.deleteTour = async (req, res, next) => {
-  const tour = await Tour.findByIdAndDelete(req.params.id);
 
-  if (!tour) {
-    return next(new AppError('failed to found tour with this id', 404));
-  }
+exports.deleteTour = factory.deleteOne(Tour);
 
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
-};
+// old Version => just a refernce(:
+// exports.deleteTour = async (req, res, next) => {
+//   const tour = await Tour.findByIdAndDelete(req.params.id);
+
+//   if (!tour) {
+//     return next(new AppError('failed to found tour with this id', 404));
+//   }
+
+//   res.status(204).json({
+//     status: 'success',
+//     data: null,
+//   });
+// };
 
 exports.getToursStatus = async (req, res, next) => {
   const stat = await Tour.aggregate([

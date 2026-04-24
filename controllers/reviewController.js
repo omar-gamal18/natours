@@ -1,5 +1,6 @@
 const Review = require('../models/reviewModel');
 const AppError = require('../utils/appError');
+const factory = require('./handlerFactory');
 
 exports.setTourUserIds = (req, res, next) => {
   if (!req.body.tour) req.body.tour = req.params.tourId;
@@ -37,3 +38,5 @@ exports.createReview = async (req, res, next) => {
     },
   });
 };
+
+exports.deleteReview = factory.deleteOne(Review);

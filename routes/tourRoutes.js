@@ -26,13 +26,4 @@ router
     tourController.deleteTour,
   );
 
-// router => OLA AND BAD VERSION
-//   .route('/:tourId/reviews')
-//   .post(
-//     authController.protect,
-//     authController.restrictTo('user'),
-//     reviewController.setTourUserIds,
-//     reviewController.createReview,
-//   );
-
 module.exports = router;
