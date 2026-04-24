@@ -2,6 +2,11 @@ const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
 
+exports.getAllUsers = factory.getAll(User);
+exports.getUser = factory.getOne(User);
+exports.updateUser = factory.updateOne(User);
+exports.deleteUser = factory.deleteOne(User);
+
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
 
@@ -38,54 +43,5 @@ exports.deleteMe = async (req, res, next) => {
   res.status(204).json({
     status: 'success',
     data: null,
-  });
-};
-
-exports.getAllUsers = async (req, res, next) => {
-  console.log('hitting getAllUsers');
-  const users = await User.find();
-  res.status(200).json({
-    status: 'success',
-    results: users.length,
-    data: {
-      users,
-    },
-  });
-};
-
-exports.getUser = async (req, res, next) => {
-  const user = await User.findById(req.params.id);
-
-  if (!user) {
-    return next(new AppError('failed to found user with this id', 404));
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      user,
-    },
-  });
-};
-exports.createUser = async (req, res, next) => {
-  const newUser = await User.create(req.body);
-  res.status(201).json({
-    status: 'success',
-    data: {
-      user: newUser,
-    },
-  });
-};
-exports.updateUser = factory.updateOne(User);
-exports.deleteUser = factory.deleteOne(User);
-
-exports.getAllUsers = async (req, res, next) => {
-  const users = await User.find();
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      users,
-    },
   });
 };

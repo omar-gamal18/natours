@@ -1,55 +1,45 @@
 const Tour = require('../models/tourModel');
-const APIFeatures = require('../utils/apiFeatures');
 const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
 
-exports.getTop5 = (req, res, next) => {
-  Object.assign(req.query, {
-    limit: '5',
-    sort: '-ratingAverage,price',
-    fields: 'name,price,ratingAverage,summary',
-  });
-  next();
-};
-
-exports.getAllTours = async (req, res, next) => {
-  const features = new APIFeatures(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .selectFields()
-    .pagination();
-
-  const tours = await features.query;
-
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours,
-    },
-  });
-};
-
-exports.getTour = async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id).populate('reviews');
-
-  if (!tour) {
-    return next(new AppError('failed to found tour with this id', 404));
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
-};
-
+exports.getAllTours = factory.getAll(Tour);
+exports.getTour = factory.getOne(Tour, { path: 'reviews' });
 exports.createTour = factory.createOne(Tour);
 exports.updateTour = factory.updateOne(Tour);
 exports.deleteTour = factory.deleteOne(Tour);
 
 // old Versions => just a refernce(:
+// exports.getTour = async (req, res, next) => {
+//   const tour = await Tour.findById(req.params.id).populate('reviews');
+
+//   if (!tour) {
+//     return next(new AppError('failed to found tour with this id', 404));
+//   }
+
+//   res.status(200).json({
+//     status: 'success',
+//     data: {
+//       tour,
+//     },
+//   });
+// };
+// exports.getAllTours = async (req, res, next) => {
+//   const features = new APIFeatures(Tour.find(), req.query)
+//     .filter()
+//     .sort()
+//     .selectFields()
+//     .pagination();
+
+//   const tours = await features.query;
+
+//   res.status(200).json({
+//     status: 'success',
+//     results: tours.length,
+//     data: {
+//       tours,
+//     },
+//   });
+// };
 // exports.createTour = async (req, res, next) => {
 //   const newTour = await Tour.create(req.body);
 //   res.status(201).json({
@@ -88,6 +78,15 @@ exports.deleteTour = factory.deleteOne(Tour);
 //     data: null,
 //   });
 // };
+
+exports.getTop5 = (req, res, next) => {
+  Object.assign(req.query, {
+    limit: '5',
+    sort: '-ratingAverage,price',
+    fields: 'name,price,ratingAverage,summary',
+  });
+  next();
+};
 
 exports.getToursStatus = async (req, res, next) => {
   const stat = await Tour.aggregate([
