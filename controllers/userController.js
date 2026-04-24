@@ -67,7 +67,15 @@ exports.getUser = async (req, res, next) => {
     },
   });
 };
-exports.createUser = factory.createOne(User);
+exports.createUser = async (req, res, next) => {
+  const newUser = await User.create(req.body);
+  res.status(201).json({
+    status: 'success',
+    data: {
+      user: newUser,
+    },
+  });
+};
 exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
 
