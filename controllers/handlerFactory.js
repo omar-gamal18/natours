@@ -78,8 +78,6 @@ exports.getAll = (Model) => async (req, res, next) => {
 
   const docs = await features.query;
   const modelName = getModelName(Model);
-  console.log(modelName);
-  console.log(getModelName(Model));
 
   res.status(200).json({
     status: 'success',
