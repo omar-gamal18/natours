@@ -1,6 +1,5 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
-const helmet = require('helmet');
 
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
@@ -22,20 +21,15 @@ router.patch(
   authController.resetPassword,
 );
 
-router.patch(
-  '/updatePassword',
-  authController.protect,
-  authController.updatePassword,
-);
+// to use the protect midlleware on all routes after this line
+router.use(authController.protect);
 
-router.get(
-  '/me',
-  authController.protect,
-  userController.getMe,
-  userController.getUser,
-);
-router.patch('/updateMe', authController.protect, userController.updateMe);
-router.delete('/deleteMe', authController.protect, userController.deleteMe);
+router.patch('/updatePassword', authController.updatePassword);
+router.get('/me', userController.getMe, userController.getUser);
+router.patch('/updateMe', userController.updateMe);
+router.delete('/deleteMe', userController.deleteMe);
+
+router.use(authController.restrictTo('admin'));
 
 router.route('/').get(userController.getAllUsers);
 router
