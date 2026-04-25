@@ -30,6 +30,8 @@ const reviewSchema = mongoose.Schema(
   },
 );
 
+reviewSchema.index({ rating: -1 });
+
 reviewSchema.pre(/^find/, function () {
   this.populate({
     path: 'user',
