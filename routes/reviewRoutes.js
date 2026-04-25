@@ -25,7 +25,7 @@ router
   )
   .delete(
     authController.restrictTo('user', 'admin'),
-    eviewController.deleteReview,
+    reviewController.deleteReview,
   );
 
 module.exports = router;

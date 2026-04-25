@@ -23,7 +23,7 @@ exports.getMe = (req, res, next) => {
 
 exports.updateMe = async (req, res, next) => {
   //1) check if user trying to update password
-  if (req.body.password || req.body.confirmPassword) {
+  if (req.body.password || req.body.passwordConfirm) {
     return next(
       new AppError('Invalid route pls use updatePassword route', 400),
     );
