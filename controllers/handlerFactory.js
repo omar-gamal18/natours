@@ -68,9 +68,9 @@ exports.getOne = (Model, popOptions) => async (req, res, next) => {
 };
 
 exports.getAll = (Model) => async (req, res, next) => {
-  // let filter = {};
-  // if (req.params.tourId) filter = { tour: req.params.tourId };
-  const features = new APIFeatures(Model.find(), req.query)
+  let filter = {};
+  if (req.params.tourId) filter = { tour: req.params.tourId };
+  const features = new APIFeatures(Model.find(filter), req.query)
     .filter()
     .sort()
     .selectFields()
