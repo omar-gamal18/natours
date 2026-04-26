@@ -88,6 +88,36 @@ exports.getMonthlyPlan = async (req, res, next) => {
   });
 };
 
+// /tours-within/:distance/center/:latlng/unit/:unit')
+exports.getToursWithin = async (req, res, next) => {
+  const { distance, unit } = req.params;
+  const [lat, lng] = req.params.latlng.split(',');
+
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+
+  if (!lat || !lng) {
+    return next(
+      new AppError(
+        'Please provide latitude  and longitude in the format lat, lng.',
+        400,
+      ),
+    );
+  }
+  const tours = await Tour.find({
+    startLocation: {
+      $geoWithin: { $centerSphere: [[lng, lat], radius] },
+    },
+  });
+
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      tours,
+    },
+  });
+};
+
 // old Versions => just a refernce(:
 // exports.getTour = async (req, res, next) => {
 //   const tour = await Tour.findById(req.params.id).populate('reviews');
