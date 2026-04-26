@@ -34,6 +34,9 @@ const reviewSchema = mongoose.Schema(
 
 reviewSchema.index({ rating: -1 });
 
+// Preventing Duplicate Reviews
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 reviewSchema.pre(/^find/, function () {
   this.populate({
     path: 'user',
@@ -94,7 +97,11 @@ reviewSchema.pre(/^findOneAnd/, async function () {
 });
 
 reviewSchema.post(/^findOneAnd/, async function () {
-  this.r.constructor.calculateAverageRatings(this.r.tour);
+  //   this              → query object (no access to static methods)
+  // this.r            → the document we saved in pre hook
+  // this.r.constructor → the Review Model itself
+  // this.r.constructor.calculateAverageRatings() → ✅ calls the static method
+  if (this.r) await this.r.constructor.calculateAverageRatings(this.r.tour);
 });
 
 const Review = mongoose.model('Review', reviewSchema);
