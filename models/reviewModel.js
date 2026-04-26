@@ -69,6 +69,34 @@ reviewSchema.post('save', function () {
   this.constructor.calculateAverageRatings(this.tour);
 });
 
+//IMPORTNAT NOTE => Use this.model.findOne(this.getFilter()) when you only need the document — not the entire query behavior.
+
+// In query middleware (like findOneAndUpdate / findOneAndDelete),
+// `this` refers to the query object, NOT the actual document.
+// We need access to the document being modified in order to recalculate
+// the average ratings after the operation.
+
+// ❌ Wrong approach:
+// Using `this.findOne()` directly executes the same query instance,
+// which can lead to unexpected behavior or query re-execution issues.
+// reviewSchema.pre(/^findOneAnd/, async function () {
+//
+//   const r = await this.findOne(); // 💥 Query was already executed error
+//  Mongoose throws Query was already executed because you're trying to run the same query object twice.
+// });
+
+// ✅ Correct approach:
+//    - Creates a fresh, clean query using only the filter conditions.
+//    - Avoids copying unnecessary options.
+//    - More explicit and predictable.
+reviewSchema.pre(/^findOneAnd/, async function () {
+  this.r = await this.model.findOne(this.getFilter());
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+  this.r.constructor.calculateAverageRatings(this.r.tour);
+});
+
 const Review = mongoose.model('Review', reviewSchema);
 
 module.exports = Review;
