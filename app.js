@@ -21,10 +21,9 @@ app.use(express.static('./public'));
 
 // Set security HTTP headers
 //app.use(helmet());
-console.log(process.env.NODE_ENV);
-if (process.env.NODE_ENV === 'production') {
-  app.use(helmet());
-}
+ app.use(helmet());
+
+
 // Limit requests from same API
 const limiter = rateLimit({
   max: 100,
