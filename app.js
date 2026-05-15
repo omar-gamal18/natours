@@ -86,5 +86,6 @@ app.all('*path', (req, res, next) => {
 app.use(ErrorHandling);
 
 module.exports = app;
+module.exports = app;
 
 

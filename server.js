@@ -30,10 +30,4 @@ process.on('unhandledRejection', (err) => {
     process.exit(1);
   });
 });
-<<<<<<< HEAD
-console.log(process.env.NODE_ENV);
-if (process.env.NODE_ENV === 'production') {
-  app.use(helmet());
-}
-=======
->>>>>>> a63fdfb5e529fe54cf70c8ebf34bab8d97dfcc88
+
