@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const sanitize = require('mongo-sanitize');
 const xss = require('xss');
 const hpp = require('hpp');
+//const hpp = require('hpp');
 
 const AppError = require('./utils/appError');
 const ErrorHandling = require('./controllers/errorController');
@@ -21,7 +22,7 @@ app.use(express.static('./public'));
 
 // Set security HTTP headers
 //app.use(helmet());
- app.use(helmet());
+app.use(helmet());
 
 
 // Limit requests from same API
@@ -85,3 +86,6 @@ app.all('*path', (req, res, next) => {
 app.use(ErrorHandling);
 
 module.exports = app;
+
+
+console.log("my name is omar a7a");
