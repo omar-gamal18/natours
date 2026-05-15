@@ -5,12 +5,12 @@ const sanitize = require('mongo-sanitize');
 const xss = require('xss');
 const hpp = require('hpp');
 
-
 const AppError = require('./utils/appError');
 const ErrorHandling = require('./controllers/errorController');
 const tourRoutes = require('./routes/tourRoutes');
 const userRoutes = require('./routes/userRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
+const viewRoutes = require('./routes/viewRoutes');
 
 const app = express();
 
@@ -21,9 +21,7 @@ app.set('query parser', 'extended');
 app.use(express.static('./public'));
 
 // Set security HTTP headers
-//app.use(helmet());
 app.use(helmet());
-
 
 // Limit requests from same API
 const limiter = rateLimit({
@@ -65,14 +63,8 @@ app.use(
   }),
 );
 
-app.get('/', (req, res) => {
-  res.status(200).render('base', {
-    tour: 'The Forest Hiker',
-    user: 'omar',
-  });
-});
-
 // Routes
+app.use('/', viewRoutes);
 app.use('/api/v1/tours', tourRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/reviews', reviewRoutes);
@@ -86,6 +78,3 @@ app.all('*path', (req, res, next) => {
 app.use(ErrorHandling);
 
 module.exports = app;
-
-
-
