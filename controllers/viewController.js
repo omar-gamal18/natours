@@ -1,4 +1,4 @@
-exports.getOverview = (req, res) => {
+exports.getOverview = async (req, res, next) => {
   res.status(200).render('overview', {
     title: 'All Tours',
   });
