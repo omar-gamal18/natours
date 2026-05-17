@@ -1,19 +1,25 @@
 doctype html
 html
   head
-    title Natours | #{tour}
-    link(rel='stylesheet' href='css/style.css')
-    link(rel='shortcut icon' type='image/png' href='img/favicon.png')
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    title Natours | #{title || 'Explore Tours'}
+    // حطينا / في أول المسارات عشان تشتغل صح مع الـ Nested Routes
+    link(rel='stylesheet' href='/css/style.css')
+    link(rel='shortcut icon' type='image/png' href='/img/favicon.png')
 
   body
-    h1= tour
-    h2= user.toUpperCase()
+    //- الـ Header الافتراضي (تقدر تفعله لو عندك ملف _header)
+    //- include _header
 
-    //- h1 The Park Camper
+    //- اختبار سريع لليوزر لو موجود ومبعوت من الـ Controller
+    if user
+      h2.user-welcome= Welcome back, ${user.toUpperCase()}
 
-    - const x = 9;
-    h2= 2 * x
+    //- هنا الـ Pug هيحشر كود أي صفحة بتعمل extends للملف ده
+    block content
+      main.main
+        h1 هذا النص الافتراضي يظهر فقط لو الـ Block فاضي
 
-    p This is just some text
-
-    p= tour
+    //- الـ Footer الافتراضي (تقدر تفعله لو عندك ملف _footer)
+    //- include _footer
