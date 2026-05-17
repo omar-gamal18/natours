@@ -4,21 +4,22 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
+const path = require('path');
 const dotenv = require('dotenv');
+dotenv.config({ path: path.join(__dirname, 'config.env') });
+
 const mongoose = require('mongoose');
 const app = require('./app');
 
-dotenv.config({ path: './config.env' });
-/*
 const DB = process.env.DATABASE.replace(
   '<db_password>',
-  process.env.DATABASE_PASSWORD,
+  encodeURIComponent(process.env.DATABASE_PASSWORD),
 );
 
 mongoose.connect(DB).then(() => {
   console.log('DB connected successfully');
 });
-*/
+
 const port = process.env.PORT || 5000;
 const server = app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

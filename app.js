@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const sanitize = require('mongo-sanitize');
@@ -14,14 +15,15 @@ const viewRoutes = require('./routes/viewRoutes');
 
 const app = express();
 
+app.set('views', 'views');
+app.use(express.urlencoded({ extended: false }));
 app.set('view engine', 'pug');
-app.set('views', './views');
 app.set('query parser', 'extended');
 
-app.use(express.static('./public'));
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Set security HTTP headers
-app.use(helmet());
 
 // Limit requests from same API
 const limiter = rateLimit({
@@ -42,12 +44,6 @@ app.use((req, res, next) => {
 });
 
 // Data sanitization against XSS
-app.use((req, res, next) => {
-  if (req.body) {
-    req.body = JSON.parse(xss(JSON.stringify(req.body)));
-  }
-  next();
-});
 
 // HTTP Parameter Pollution Prevention
 app.use(
