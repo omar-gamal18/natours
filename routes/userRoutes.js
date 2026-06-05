@@ -1,5 +1,6 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
+const multer = require('multer');
 
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
@@ -11,6 +12,8 @@ const authLimiter = rateLimit({
   windowMs: 30 * 60 * 1000,
   message: 'TOO many attempts, pls try again after 30 minutes',
 });
+
+const upload = multer({ dest: 'public/img/users' });
 
 router.post('/signup', authLimiter, authController.signUp);
 router.post('/login', authLimiter, authController.login);
@@ -26,7 +29,7 @@ router.use(authController.protect);
 
 router.patch('/updatePassword', authController.updatePassword);
 router.get('/me', userController.getMe, userController.getUser);
-router.patch('/updateMe', userController.updateMe);
+router.patch('/updateMe', upload.single('photo'), userController.updateMe);
 router.delete('/deleteMe', userController.deleteMe);
 
 router.use(authController.restrictTo('admin'));

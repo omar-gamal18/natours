@@ -23,6 +23,7 @@
     "mailtrap": "^4.5.1",
     "mongo-sanitize": "^1.1.0",
     "mongoose": "^9.3.2",
+    "multer": "^2.1.1",
     "nodemailer": "^7.0.13",
     "nodemon": "^3.1.14",
     "pug": "^3.0.4",
