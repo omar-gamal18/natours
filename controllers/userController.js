@@ -1,11 +1,21 @@
+const multer = require('multer');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
 
+const upload = multer({ dest: 'public/img/users' });
+
+exports.uploadUserPhoto = upload.single('photo');
 exports.getAllUsers = factory.getAll(User);
 exports.getUser = factory.getOne(User);
 exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/img/users');
+  },
+});
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
