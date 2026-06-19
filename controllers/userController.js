@@ -53,7 +53,10 @@ exports.updateMe = async (req, res, next) => {
       new AppError('Invalid route pls use updatePassword route', 400),
     );
   }
+
   const filtered = filterObj(req.body, 'name', 'email');
+  if (req.file) filtered.photo = req.file.filename;
+
   const user = await User.findByIdAndUpdate(req.user.id, filtered, {
     returnDocument: 'after',
     runValidators: true,
