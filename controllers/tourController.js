@@ -46,10 +46,10 @@ exports.resizeTourImages = async (req, res, next) => {
   req.body.images = [];
 
   await Promise.all(
-    req.files.images.map(async (file) => {
+    req.files.images.map(async (file, i) => {
       const filename = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
 
-      await sharp(req.files.imageCover[0].buffer)
+      await sharp(file.buffer)
         .resize(2000, 1333)
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
